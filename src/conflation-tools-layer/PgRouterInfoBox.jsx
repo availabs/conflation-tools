@@ -1,13 +1,23 @@
 import React from "react"
 
-import { scaleLinear, scaleQuantize } from "d3-scale"
+import { scaleLinear } from "d3-scale"
 
 import maplibre from "maplibre-gl"
 
-const InofBox = ({ layer, layerState, maplibreMap }) => {
+const PgRouterInfoBox = ({ layer, layerState, maplibreMap }) => {
 	const clickedPoint = layerState[layer.id].clickedPoint;
 
 	const [points, setPoints] = React.useState([]);
+	const [loading, setLoading] = React.useState(false);
+
+	const removeAllPoints = React.useCallback(() => {
+		setPoints(points => {
+			points.forEach(({ marker }) => {
+				marker.remove();
+			});
+			return [];
+		});
+	}, []);
 
 	const removePoint = React.useCallback(cid => {
 		setPoints(points => {
@@ -28,6 +38,7 @@ const InofBox = ({ layer, layerState, maplibreMap }) => {
 	}, [points.length]);
 
 	React.useEffect(() => {
+		if (loading) return;
 		if (!clickedPoint) return;
 
 		const { lng, lat } = clickedPoint;
@@ -64,14 +75,15 @@ const InofBox = ({ layer, layerState, maplibreMap }) => {
 				return points
 			}
 		})
-	}, [clickedPoint]);
+	}, [clickedPoint, loading]);
 
 	React.useEffect(() => {
 		const hasNewPoint = points.reduce((a, c) => {
-			return a || Boolean(!c.marker);
+			return a || Boolean(c.point);
 		}, false);
 
 		if (hasNewPoint) {
+										// THERE IS ONLY EVER A MARKER OR A POINT
 			const mapped = points.map(({ cid, point, marker }, i) => {
 				if (marker) {
 					point = marker.getLngLat();
@@ -85,8 +97,6 @@ const InofBox = ({ layer, layerState, maplibreMap }) => {
 			setPoints(mapped);
 		}
 	}, [points, colorScale]);
-
-	const [loading, setLoading] = React.useState(false);
 
 	const sendRequest = React.useCallback(() => {
 		const coords = points.map(({ marker }) => {
@@ -108,17 +118,36 @@ const InofBox = ({ layer, layerState, maplibreMap }) => {
 					maplibreMap.getSource("path-source")
 						.setData(json.result.pathFeature);
 				}
-			}).then(() => setLoading(false));
+			})
+			.catch(e => {
+				console.error(e);
+			})
+			.finally(() => {
+				setLoading(false);
+			});
 	}, [points, maplibreMap]);
 
 	const canSend = React.useMemo(() => {
 		return !loading && (points.length > 1);
 	}, [points, loading]);
 
+	const clearPath = React.useCallback(() => {
+		const emptyCollection = {
+			type: "FeatureCollection",
+			features: []
+		}
+		maplibreMap.getSource("path-nodes-source").setData(emptyCollection);
+		maplibreMap.getSource("path-source").setData(emptyCollection);
+	}, [maplibreMap]);
+
+	const clearAll = React.useCallback(() => {
+		removeAllPoints();
+		clearPath();
+	}, [removeAllPoints, clearPath]);
+
 	return (
 		<div className="text-sm relative">
-			<span className="text-lg font-bold">Points</span>
-			<div className="grid grid-cols-1">
+			<div className="grid grid-cols-1 gap-1">
 				{	points.filter(p => Boolean(p.marker))
 						.map((p, i) => (
 							<InfoBoxPoint key={ p.cid } { ...p }
@@ -126,11 +155,12 @@ const InofBox = ({ layer, layerState, maplibreMap }) => {
 								bgColor={ colorScale(i) }/>
 						))
 				}
-				<div className="border-t-2 pt-1">
+
+				<div>
 					<button onClick={ sendRequest }
 						disabled={ !canSend }
 						className={	`
-							w-full rounded py-1
+							w-full rounded py-3
 							bg-green-300 hover:bg-green-400 disabled:bg-red-300
 							cursor-pointer disabled:cursor-not-allowed
 							disabled:opacity-50
@@ -139,6 +169,40 @@ const InofBox = ({ layer, layerState, maplibreMap }) => {
 						Send PG Router Request
 					</button>
 				</div>
+
+				<div className="grid grid-cols-3 gap-1">
+					<button onClick={ removeAllPoints }
+						className={	`
+							w-full rounded py-1
+							bg-gray-300 hover:bg-gray-400 disabled:bg-gray-300
+							cursor-pointer disabled:cursor-not-allowed
+							disabled:opacity-50
+						` }
+					>
+						Clear Points
+					</button>
+					<button onClick={ clearPath }
+						className={	`
+							w-full rounded py-1
+							bg-gray-300 hover:bg-gray-400 disabled:bg-gray-300
+							cursor-pointer disabled:cursor-not-allowed
+							disabled:opacity-50
+						` }
+					>
+						Clear Path
+					</button>
+					<button onClick={ clearAll }
+						className={	`
+							w-full rounded py-1
+							bg-gray-300 hover:bg-gray-400 disabled:bg-gray-300
+							cursor-pointer disabled:cursor-not-allowed
+							disabled:opacity-50
+						` }
+					>
+						Clear All
+					</button>
+				</div>
+
 			</div>
 			{ !loading ? null :
 				<div
@@ -157,7 +221,7 @@ const InofBox = ({ layer, layerState, maplibreMap }) => {
 	)
 }
 
-export default InofBox;
+export default PgRouterInfoBox;
 
 const InfoBoxPoint = ({ marker, cid, remove, bgColor }) => {
 	const doRemove = React.useCallback(() => {
