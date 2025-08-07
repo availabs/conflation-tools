@@ -7,26 +7,26 @@ import TmcSearchInfoBox from "./TmcSearchInfoBox"
 import PgRouterInfoBox from "./PgRouterInfoBox"
 import HoverComp from "./HoverComp"
 
-const cp_2_source_id = 1403;
-const cp_2_view_id = 2559;
+const cp_2_source_id = 1414;
+const cp_2_view_id = 2570;
 
-const cp_3_source_id = 1402;
-const cp_3_view_id = 2558;
+const cp_3_source_id = 1415;
+const cp_3_view_id = 2571;
 
-const problem_TMCs_source_id = 1406;
-const problem_TMCs_view_id = 2562;
+const problem_TMCs_source_id = 1413;
+const problem_TMCs_view_id = 2569;
 
 const LAYER_ID = "checkpoint-2-layer";
 
 class ConflationToolsLayer extends AvlLayer {
-	constructor() {
+	constructor(config) {
 		super({ id: LAYER_ID, name: "Conflation Tools Layer" });
 
-		this.cp_2_source_id = cp_2_source_id;
-		this.cp_2_view_id = cp_2_view_id;
+		Object.assign(this, config);
 
-		this.cp_3_source_id = cp_3_source_id;
-		this.cp_3_view_id = cp_3_view_id;
+		this.sources = makeSources(config);
+
+		this.layers = makeLayers(config);
 	}
 	startState = {
 		clickedPoint: null,
@@ -65,7 +65,27 @@ class ConflationToolsLayer extends AvlLayer {
 		}
 	]
 	RenderComponent = RenderComponent
-	sources = [
+}
+
+const layerFactory = config => {
+	return new ConflationToolsLayer(config);
+}
+export default layerFactory;
+
+const makeSources = config => {
+
+	const {
+		cp_2_source_id,
+		cp_2_view_id,
+
+		cp_3_source_id,
+		cp_3_view_id,
+
+		problem_TMCs_source_id,
+		problem_TMCs_view_id
+	} = config;
+
+	return [
 		{	"id": "path-nodes-source",
 			"source": {
 				"type": "geojson",
@@ -112,7 +132,22 @@ class ConflationToolsLayer extends AvlLayer {
 	      	}
 	   	}
 	]
-	layers = [
+}
+
+const makeLayers = config => {
+
+	const {
+		cp_2_source_id,
+		cp_2_view_id,
+
+		cp_3_source_id,
+		cp_3_view_id,
+
+		problem_TMCs_source_id,
+		problem_TMCs_view_id
+	} = config;
+
+	return [
 		{	"id": "problem-tmcs",
       		"type": "line",
       		"source": `npmrds2_s${ problem_TMCs_source_id }_v${ problem_TMCs_view_id }`,
@@ -193,9 +228,3 @@ class ConflationToolsLayer extends AvlLayer {
 		}
 	]
 }
-
-const layerFactory = options => {
-	options = options || {};
-	return new ConflationToolsLayer(options);
-}
-export default layerFactory;

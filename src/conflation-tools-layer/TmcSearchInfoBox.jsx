@@ -6,6 +6,23 @@ const TMC_REGEX = /^\d{3}[+-PNpn]\d{5}$/;
 
 const TmcSearchInfoBox = ({ layer, layerState, maplibreMap, ...props }) => {
 
+	const [tmcBboxes, setTmcBboxes] = React.useState(new Map());
+
+  React.useEffect(() => {
+    fetch("http://localhost:4444/tmc-bboxes/npmrds2")
+      .then(res => res.json())
+      .then(json => {
+      	if (json.ok) {
+      		setTmcBboxes(
+      			json.result.rows.reduce((a, c) => {
+      				a.set(c.tmc, c.bbox);
+      				return a;
+      			}, new Map())
+      		)
+      	}
+      })
+  }, []);
+
 	const selfLayerState = React.useMemo(() => {
 		return layerState[layer.id];
 	}, [layerState, layer.id]);
@@ -51,30 +68,15 @@ const TmcSearchInfoBox = ({ layer, layerState, maplibreMap, ...props }) => {
 	}, [selfLayerState.filteredTMCs]);
 
 	const [zoomTo, setZoomTo] = React.useState(null);
-	
-	if (zoomTo) {
-		const source = `npmrds2_s${ layer.cp_2_source_id }_v${ layer.cp_2_view_id }`;
-		const sourceLayer = `view_${ layer.cp_2_view_id }`;
 
-		const features = maplibreMap.querySourceFeatures(source, { sourceLayer })
-							.filter(f => f.properties.tmc === zoomTo);
-
-		if (features.length) {
-			const collection = {
-				type: "FeatureCollection",
-				features
-			}
-			const [minLon, minLat, maxLon, maxLat] = turf.bbox(collection);
+	React.useEffect(() => {
+		if (zoomTo && tmcBboxes.has(zoomTo)) {
 			const padding = {
 				top: 150, bottom: 150, left: 200, right: 200
 			}
-			maplibreMap.fitBounds([[minLon, minLat], [maxLon, maxLat]], { padding });
-			setZoomTo(null);
+			maplibreMap.fitBounds(tmcBboxes.get(zoomTo), { padding });
 		}
-		else {
-
-		}
-	}
+	}, [tmcBboxes, zoomTo]);
 
 	return (
 		<div>

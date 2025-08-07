@@ -69,7 +69,7 @@ const RenderComponent = props => {
 				<span className={ cp2visibility === "none" ?
 									"fa fa-eye-slash text-2xl" :
 									"fa fa-eye text-2xl" }/>
-				<span className="ml-2 flex-1 text-right">
+				<span className="ml-2 flex-1 text-right font-bold">
 					{ cp2visibility === "none" ? "Show " : "Hide " }
 					Checkpoint 2
 				</span>
@@ -85,7 +85,7 @@ const RenderComponent = props => {
 				<span className={ cp3visibility === "none" ?
 									"fa fa-eye-slash text-2xl" :
 									"fa fa-eye text-2xl" }/>
-				<span className="ml-2 flex-1 text-right">
+				<span className="ml-2 flex-1 text-right font-bold">
 					{ cp3visibility === "none" ? "Show " : "Hide " }
 					Checkpoint 3
 				</span>
@@ -101,7 +101,7 @@ const RenderComponent = props => {
 				<span className={ problemTMCsVisibility === "none" ?
 									"fa fa-eye-slash text-2xl" :
 									"fa fa-eye text-2xl" }/>
-				<span className="ml-2 flex-1 text-right">
+				<span className="ml-2 flex-1 text-right font-bold">
 					{ problemTMCsVisibility === "none" ? "Show " : "Hide " }
 					Problem TMCs
 				</span>
