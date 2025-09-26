@@ -6,9 +6,11 @@ const TMC_REGEX = /^\d{3}[+-PNpn]\d{5}$/;
 
 const TmcSearchInfoBox = ({ layer, layerState, maplibreMap, ...props }) => {
 
+	const [loading, setLoading] = React.useState(false);
 	const [tmcBboxes, setTmcBboxes] = React.useState(new Map());
 
   React.useEffect(() => {
+  	setLoading(true);
     fetch("http://localhost:4444/tmc-bboxes/npmrds2")
       .then(res => res.json())
       .then(json => {
@@ -20,7 +22,7 @@ const TmcSearchInfoBox = ({ layer, layerState, maplibreMap, ...props }) => {
       			}, new Map())
       		)
       	}
-      })
+      }).then(() => setLoading(false))
   }, []);
 
 	const selfLayerState = React.useMemo(() => {
@@ -44,6 +46,7 @@ const TmcSearchInfoBox = ({ layer, layerState, maplibreMap, ...props }) => {
 			else if (!prev) {
 				return clickedProblemTMC;
 			}
+			return prev;
 		})
 	}, [clickedProblemTMC]);
 
@@ -75,18 +78,30 @@ const TmcSearchInfoBox = ({ layer, layerState, maplibreMap, ...props }) => {
 				top: 150, bottom: 150, left: 200, right: 200
 			}
 			maplibreMap.fitBounds(tmcBboxes.get(zoomTo), { padding });
+			setZoomTo(null);
 		}
 	}, [tmcBboxes, zoomTo]);
 
 	return (
-		<div>
+		<div className="relative">
+			{ !loading ? null :
+				<div
+					className={ `
+						inset-0 absolute opacity-75 bg-black z-50 rounded
+						text-white font-bold text-2xl
+						flex items-center justify-center
+					` }
+				>
+					LOADING...
+				</div>
+			}
 			<textarea rows={ 5 }
-				className="w-full p-1 border-1 rounded block"
+				className="w-full p-2 border-1 rounded block"
 				value={ textareaValue }
 				onChange={ doOnChange }/>
 
 			{	!filteredTMCs.length ? null :
-				<div className="grid grid-cols-1 gap-1 mt-1">
+				<div className="grid grid-cols-1 gap-1 mt-1 max-h-80 overflow-auto">
 					{	filteredTMCs.map(tmc => (
 							<FilteredTMC key={ tmc }
 								tmc={ tmc }

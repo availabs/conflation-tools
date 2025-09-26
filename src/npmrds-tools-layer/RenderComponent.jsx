@@ -57,21 +57,21 @@ const RenderComponent = props => {
 	}, [maplibreMap, setLayerVisibility, problemTMCsVisibility]);
 
 	return (
-		<div className="w-60 grid grid-cols-1 gap-2">
+		<div className="w-fit grid grid-cols-1 gap-2 mb-2">
 
 			<button onClick={ toggleCheckpoint2Visibility }
 				className={ `
 					py-3 px-4 rounded-lg pointer-events-auto
 					bg-gray-100 hover:bg-gray-400 cursor-pointer
-					flex items-center w-60
+					flex items-center w-full
 				` }
 			>
 				<span className={ cp2visibility === "none" ?
 									"fa fa-eye-slash text-2xl" :
 									"fa fa-eye text-2xl" }/>
-				<span className="ml-2 flex-1 text-right font-bold">
+				<span className="ml-8 flex-1 text-right font-bold">
 					{ cp2visibility === "none" ? "Show " : "Hide " }
-					Checkpoint 2
+					NPMRDS Checkpoint 2
 				</span>
 			</button>
 
@@ -79,15 +79,15 @@ const RenderComponent = props => {
 				className={ `
 					py-3 px-4 rounded-lg pointer-events-auto
 					bg-gray-100 hover:bg-gray-400 cursor-pointer
-					flex items-center w-60
+					flex items-center w-full
 				` }
 			>
 				<span className={ cp3visibility === "none" ?
 									"fa fa-eye-slash text-2xl" :
 									"fa fa-eye text-2xl" }/>
-				<span className="ml-2 flex-1 text-right font-bold">
+				<span className="ml-8 flex-1 text-right font-bold">
 					{ cp3visibility === "none" ? "Show " : "Hide " }
-					Checkpoint 3
+					NPMRDS Checkpoint 3
 				</span>
 			</button>
 
@@ -95,13 +95,13 @@ const RenderComponent = props => {
 				className={ `
 					py-3 px-4 rounded-lg pointer-events-auto
 					bg-gray-100 hover:bg-gray-400 cursor-pointer
-					flex items-center w-60
+					flex items-center w-full
 				` }
 			>
 				<span className={ problemTMCsVisibility === "none" ?
 									"fa fa-eye-slash text-2xl" :
 									"fa fa-eye text-2xl" }/>
-				<span className="ml-2 flex-1 text-right font-bold">
+				<span className="ml-8 flex-1 text-right font-bold">
 					{ problemTMCsVisibility === "none" ? "Show " : "Hide " }
 					Problem TMCs
 				</span>

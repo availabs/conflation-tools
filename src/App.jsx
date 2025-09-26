@@ -2,7 +2,10 @@ import React from "react"
 
 import { AvlMap } from "~/submodules/avl-map-2/src"
 
-import ConflationToolsLayerFactory from "./conflation-tools-layer"
+import NpmrdsToolsLayerFactory from "./npmrds-tools-layer"
+import RisToolsLayerFactory from "./ris-tools-layer"
+
+const MapOptions = { zoom: 9 };
 
 function App() {
 
@@ -25,7 +28,10 @@ function App() {
 
   React.useEffect(() => {
     if (config && !layers.length) {
-      setLayers([ConflationToolsLayerFactory(config)]);
+      setLayers([
+        NpmrdsToolsLayerFactory(config, false),
+        RisToolsLayerFactory(config, true)
+      ]);
     }
   }, [config, layers]);
 
@@ -33,7 +39,7 @@ function App() {
     <div className="w-screen h-screen relative">
       <AvlMap
         layers={ layers }
-        mapOptions={ { zoom: 9 } }/>
+        mapOptions={ MapOptions }/>
     </div>
   )
 }
