@@ -4,7 +4,7 @@ import { AvlLayer } from "~/submodules/avl-map-2/src"
 
 import RenderComponent from "./RenderComponent"
 import TmcSearchInfoBox from "./TmcSearchInfoBox"
-import PgRouterInfoBox from "./PgRouterInfoBox"
+// import PgRouterInfoBox from "./PgRouterInfoBox"
 import HoverComp from "./HoverComp"
 
 const LAYER_ID = "npmrds-checkpoint-2-layer";
@@ -22,20 +22,20 @@ class ConflationToolsLayer extends AvlLayer {
 		this.startActive = Boolean(startActive);
 	}
 	startState = {
-		clickedPoint: null,
+		// clickedPoint: null,
 		clickedProblemTMC: null,
 		filteredTMCs: []
 	}
 	onClick = {
-		layers: ["maplibreMap", "problem-tmcs"],
+		layers: ["problem-tmcs"],
 		callback: function(layerId, features, lngLat, point, event) {
 			if (layerId === "problem-tmcs") {
 				const tmc = features[0].properties.tmc;
 				this.updateState({ clickedProblemTMC: tmc });
 			}
-			else if ((layerId === "maplibreMap") && event.ctrlKey) {
-				this.updateState({ clickedPoint: { ...lngLat } });
-			}
+			// else if ((layerId === "maplibreMap") && event.ctrlKey) {
+			// 	this.updateState({ clickedPoint: { ...lngLat } });
+			// }
 		}
 	}
 	onHover = {
@@ -53,9 +53,9 @@ class ConflationToolsLayer extends AvlLayer {
 		{	Component: TmcSearchInfoBox,
 			Header: "TMC Search InfoBox"
 		},
-		{	Component: PgRouterInfoBox,
-			Header: "PG Router InfoBox"
-		}
+		// {	Component: PgRouterInfoBox,
+		// 	Header: "PG Router InfoBox"
+		// }
 	]
 	RenderComponent = RenderComponent
 }
@@ -79,24 +79,24 @@ const makeSources = config => {
 	} = config;
 
 	return [
-		{	"id": "path-nodes-source",
-			"source": {
-				"type": "geojson",
-				"data": {
-					"type": "FeatureCollection",
-					"features": []
-				}
-			}
-		},
-		{	"id": "path-source",
-			"source": {
-				"type": "geojson",
-				"data": {
-					"type": "FeatureCollection",
-					"features": []
-				}
-			}
-		},
+		// {	"id": "path-nodes-source",
+		// 	"source": {
+		// 		"type": "geojson",
+		// 		"data": {
+		// 			"type": "FeatureCollection",
+		// 			"features": []
+		// 		}
+		// 	}
+		// },
+		// {	"id": "path-source",
+		// 	"source": {
+		// 		"type": "geojson",
+		// 		"data": {
+		// 			"type": "FeatureCollection",
+		// 			"features": []
+		// 		}
+		// 	}
+		// },
 		{ 	"id": `npmrds2_s${ NPMRDS_cp_3_source_id }_v${ NPMRDS_cp_3_view_id }`,
 	      	"source": {
 	         	"type": "vector",
@@ -200,22 +200,22 @@ const makeLayers = config => {
      		]
   		}
  		},
-		{	"id": "path-nodes",
-			"type": "circle",
-			"source": "path-nodes-source",
-			"paint": {
-				"circle-radius": 5,
-				"circle-color": "white"
-			}
-		},
-		{	"id": "path",
-			"type": "line",
-			"source": "path-source",
-			"paint": {
-				"line-width": 3,
-				"line-color": "white",
-				"line-offset": 3
-			}
-		}
+		// {	"id": "path-nodes",
+		// 	"type": "circle",
+		// 	"source": "path-nodes-source",
+		// 	"paint": {
+		// 		"circle-radius": 5,
+		// 		"circle-color": "white"
+		// 	}
+		// },
+		// {	"id": "path",
+		// 	"type": "line",
+		// 	"source": "path-source",
+		// 	"paint": {
+		// 		"line-width": 3,
+		// 		"line-color": "white",
+		// 		"line-offset": 3
+		// 	}
+		// }
 	]
 }
